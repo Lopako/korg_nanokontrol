@@ -1,0 +1,7 @@
+# IDE/Developer
+.project
+.cproject
+.pydevproject
+
+CATKIN_IGNORE
+
