@@ -35,6 +35,11 @@ control_axes = [{
   # mode 4, knobs
   10: 9, 266: 10, 522: 11, 778: 12, 1034: 13, 1290: 14, 1546: 15, 1802: 16,
   2058: 17,
+  },{
+  # mode 5, sliders, -- nanoKONTROL2
+  0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7,
+  # mode 5, knobs
+  16: 8, 17: 9, 18: 10, 19: 11, 20: 12, 21: 13, 22: 14, 23: 15,
   }]
 
 control_buttons = [[
@@ -61,6 +66,21 @@ control_buttons = [[
   16, 17, 272, 273, 528, 529, 784, 785, 1040, 1041, 1296, 1297, 1552, 1553, 1808, 1809, 2064, 2065,
   # rew, play, ff, repeat, stop, rec
   47, 45, 48, 49, 46, 44
+],[
+  # mode 5 -- nanoKONTROL2
+  # s, m, r
+  32, 48, 64,
+  33, 49, 65,
+  34, 50, 66,
+  35, 51, 67,
+  36, 52, 68,
+  37, 53, 69,
+  38, 54, 70,
+  39, 55, 71,
+  # rew, play, ff, repeat(cycle), stop, rec
+  43, 41, 44, 46, 42, 45,
+  # track-L, track-R, marker-set, marker-L, marker-R
+  58, 59, 60, 61, 62
 ]]
 
 def main():
@@ -99,7 +119,8 @@ def main():
       while controller.poll():
          c += 1
          data = controller.read(1)
-         #print data
+         #DEBUG LINE: prints midi data in (status,byte1,byte2,byte3),timestamp
+         print data
          # loop through events received
          for event in data:
             control = event[0]
@@ -128,6 +149,12 @@ def main():
                   if mode is None:
                      print 'skipped because mode is yet unknown'
                      continue
+                  else:
+                     # using nanokontrol2 modes
+                     if mode > 3:
+                         m.axes = [0] * 16
+                         m.buttons = [0] * 35
+                     print "Mode is %d" % (mode,)
 
                if control_id in control_axes[mode]:
                   control_val = float(control[2] - 63) / 63.0
@@ -158,7 +185,7 @@ def main():
          p = False
 
       rospy.sleep(0.1) # 10Hz maximum input
-                  
+
 
 
 if __name__ == '__main__':
